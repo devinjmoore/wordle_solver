@@ -39,7 +39,7 @@ class WordleSolver:
             solution (str): The proposed Wordle solution
 
         Returns:
-            bool: Indicates if a proposed solution follows all known hints in
+            bool: Indicates if a proposed solution uses all known hints from
             this Wordle
         """
 
@@ -53,18 +53,20 @@ class WordleSolver:
                         return False
 
                 elif guess.hints[i] == guess._LETTER_WRONG_PLACE:
-                    # region Verify that the solution uses this letter
-                    letter_match_indices = [
+                    # region Verify that the solution does use this letter
+                    # Find indices at which the solution uses this letter
+                    letter_matched_indices = [
                         index for (index, letter) in enumerate(solution)
                         if letter == guess.word[i]
                     ]
                     
                     # Remove indices of already-correct letters
-                    for index in letter_match_indices:
+                    for index in letter_matched_indices:
                         if guess.hints[index] == guess._LETTER_CORRECT:
-                            letter_match_indices.remove(index)
+                            letter_matched_indices.remove(index)
 
-                    if not len(letter_match_indices) > 0:
+                    # Verify that 
+                    if not len(letter_matched_indices) > 0:
                         return False
                     # endregion
 

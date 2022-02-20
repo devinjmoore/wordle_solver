@@ -1,4 +1,5 @@
 import sys
+from typing import Callable
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from wordle_solver import Wordle, WordleSolver
@@ -136,6 +137,9 @@ class WordleSolverGUI(QtWidgets.QWidget):
         
         self.show()
 
+    def _current_letter(self) -> LetterTile:
+        return self.letter_grid[self.letter_cursor[0]][self.letter_cursor[1]]
+
     @QtCore.Slot(LetterTile)
     def _cycle_through_hints(self, letter:LetterTile) -> None:
         if letter.is_empty():
@@ -154,17 +158,17 @@ class WordleSolverGUI(QtWidgets.QWidget):
         self._current_letter().change_bg_color(self._COLOR_LETTER_NOT_ENTERED)
 
 
-    def _move_cursor(move_cursor_in_a_direction):
+    def _move_cursor(move_cursor: Callable):
         def wrapper(*args, **kwargs):
             self: WordleSolverGUI = args[0]
 
             self._current_letter().setHighlight(False)
 
             if len(args) == 1:
-                move_cursor_in_a_direction(gui)
+                move_cursor(gui)
             else:
                 letter: LetterTile = args[1]
-                move_cursor_in_a_direction(gui, letter)
+                move_cursor(gui, letter)
 
             gui._current_letter().setHighlight(True)
         return wrapper
@@ -227,9 +231,6 @@ class WordleSolverGUI(QtWidgets.QWidget):
         self.results.show()
         
         self.results_showing = True
-
-    def _current_letter(self) -> LetterTile:
-        return self.letter_grid[self.letter_cursor[0]][self.letter_cursor[1]]
 
     def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
         if self.results_showing:
